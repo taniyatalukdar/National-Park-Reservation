@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capstone.Models
 {
-    class Reservation
+     public class Reservation
     {
         public int ReservationId { get; set; }
         public int SiteId { get; set; }
