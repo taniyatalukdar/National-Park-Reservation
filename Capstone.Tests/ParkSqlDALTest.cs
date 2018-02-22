@@ -23,7 +23,7 @@ namespace Capstone.Tests
         {
             using (TransactionScope transaction = new TransactionScope())
             {
-                ParkSqlDALTest.InsertFakePark(0, "test", (Convert.ToDateTime("1/15/1990")), "Cleveland", 1000, 13, "An amusing campsite");
+                ParkSqlDALTest.InsertFakePark(0, "test", (Convert.ToDateTime("1/15/1990")), "Cleveland", 1000, 42, "An amusing campsite");
             }
         }
 
@@ -32,24 +32,20 @@ namespace Capstone.Tests
             using (SqlConnection conn = new SqlConnection(@"Server=.\SqlExpress;Database=campground-tiny;Trusted_Connection=true"))
             {
                 conn.Open();
-                SqlCommand cmd = new SqlCommand("INSERT INTO park VALUES (@Id, @name, @establishDate, @locaton, @area, @visitors, @description", conn);
+                SqlCommand cmd = new SqlCommand("INSERT INTO park VALUES (@name, @locaton, @establishDate, @area, @visitors, @description)", conn);
                 
-                cmd.Parameters.AddWithValue("@Id", Id);
+                
                 cmd.Parameters.AddWithValue("@name", Name);
-                cmd.Parameters.AddWithValue("@establishDate", Convert.ToDateTime("1/15/1990"));
+                cmd.Parameters.AddWithValue("@establishDate", "1/1/1990");
                 cmd.Parameters.AddWithValue("@locaton", Location);
                 cmd.Parameters.AddWithValue("@area", area);
-                cmd.Parameters.AddWithValue("@vistors", visitors);
-                cmd.Parameters.AddWithValue("description", description);
+                cmd.Parameters.AddWithValue("@visitors", visitors);
+                cmd.Parameters.AddWithValue("@description", description);
 
-
-
-
-
-
+                
                 cmd.ExecuteNonQuery();
 
-                cmd = new SqlCommand("SELECT MAX(Id) FROM park", conn);
+                cmd = new SqlCommand("SELECT MAX(park_id) FROM park", conn);
                 int result = Convert.ToInt32(cmd.ExecuteScalar());
                 return result;
             }
