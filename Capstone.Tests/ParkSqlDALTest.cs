@@ -11,7 +11,7 @@ namespace Capstone.Tests
     [TestClass]
     public class ParkSqlDALTest
     {
-        public string connection = @"Server=.\SqlExpress;Database=campground-tiny;Trusted_Connection=true";
+        public static string connection = @"Server=.\SqlExpress;Database=campground-tiny;Trusted_Connection=true";
 
         //public ParkSqlDALTest(string dbconnectionString)
         //{
@@ -24,12 +24,18 @@ namespace Capstone.Tests
             using (TransactionScope transaction = new TransactionScope())
             {
                 ParkSqlDALTest.InsertFakePark(0, "test", (Convert.ToDateTime("1/15/1990")), "Cleveland", 1000, 42, "An amusing campsite");
+
+                ParkSqlDAL testClass = new ParkSqlDAL(connection);
+
+                List<Park> park = testClass.GetAllParks();
+
+                Assert.AreEqual(4, park.Count);
             }
         }
 
         public static int InsertFakePark(int Id, string Name, DateTime establishDate, string Location, int area, int visitors, string description)
         {
-            using (SqlConnection conn = new SqlConnection(@"Server=.\SqlExpress;Database=campground-tiny;Trusted_Connection=true"))
+            using (SqlConnection conn = new SqlConnection(connection))
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand("INSERT INTO park VALUES (@name, @locaton, @establishDate, @area, @visitors, @description)", conn);

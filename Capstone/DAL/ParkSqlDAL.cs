@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Capstone.DAL
 {
-    class ParkSqlDAL
+    public class ParkSqlDAL
     {
         private string connectionString;
 
@@ -23,17 +23,27 @@ namespace Capstone.DAL
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(@"Server=.\SqlExpress;Database=campground-tiny;Trusted_Connection=true"))
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("SELECT * FROM Park ORDER BY NAME ASC, conn");
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM park ORDER BY NAME ASC", conn);
+                    
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     while(reader.Read())
                     {
-                        output.Add(PopulatePark(reader));
+                        Park p = new Park();
+                        p.Id = Convert.ToInt32(reader["park_id"]);
+                        p.Name = Convert.ToString(reader["name"]);
+                        p.Location = Convert.ToString(reader["location"]);
+                        p.Establish_Date = Convert.ToDateTime(reader["establish_date"]);
+                        p.Area = Convert.ToInt32(reader["area"]);
+                        p.Visitors = Convert.ToInt32(reader["visitors"]);
+                        p.Description = Convert.ToString(reader["description"]);
+
+                        output.Add(p);
                     }
                 }
             }
@@ -45,21 +55,8 @@ namespace Capstone.DAL
 
             return output;
         }
-         
-        public Park PopulatePark(SqlDataReader reader)
-        {
-            Park p = new Park();
-            p.Id = Convert.ToInt32(reader["park_id"]);
-            p.Name = Convert.ToString(reader["name"]);
-            p.Location = Convert.ToString(reader["location"]);
-            p.Establish_Date = Convert.ToDateTime(reader["establish_date"]);
-            p.Area = Convert.ToInt32(reader["area"]);
-            p.Visitors = Convert.ToInt32(reader["visitors"]);
-            p.Description = Convert.ToString(reader["description"]);
 
-            return p;
+     
 
-        }
-        
     }
 }

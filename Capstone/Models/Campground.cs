@@ -11,8 +11,8 @@ namespace Capstone.Models
         public int CampgroundId { get; set; }
         public int ParkId { get; set; }
         public string Name { get; set; }
-        public DateTime Open_From_MM { get; set; }
-        public DateTime Open_To_MM { get; set; }
-        public int DAily_Fee { get; set; }
+        public int Open_From_MM { get; set; }
+        public int Open_To_MM { get; set; }
+        public int Daily_Fee { get; set; }
     }
 }
