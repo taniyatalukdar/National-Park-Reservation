@@ -1,15 +1,28 @@
 ﻿using System;
+using Capstone.Models;
+using Capstone.DAL;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Capstone
 {
+   
+
      public class CapstoneProjectCLI
     {
-        
-        const string Command_Acadia = "1";
+
+        private string connectionString;
+
+        public CapstoneProjectCLI(string dbconnectionString)
+        {
+            connectionString = dbconnectionString;
+        }
+
+
+        const string Command_GetAllParks = "1";
         const string Command_Arches = "2";
         const string Command_CuyahogaNationalPark = "3";
         const string Command_Quit = "Q";
@@ -26,49 +39,35 @@ namespace Capstone
             PrintHeader();
             PrintMenu();
 
+            ParkSqlDAL testClass = new ParkSqlDAL(connectionString);
+
             while (true)
             {
                 string command = Console.ReadLine();
                 Console.Clear();
 
-                switch (command.ToLower())
+                while(true)
                 {
-                    case Command_Acadia:
-                        Acadia();
-                        break;
+                    MainMenuText();
+                    String userInput = Console.ReadLine();
 
-                    case Command_Arches:
-                        Arches();
-                        break;
+                    if(userInput == "1")
+                    {
+                        testClass.GetAllParks();
+                    }
+                    if(userInput == "2")
+                    {
 
-                    case Command_CuyahogaNationalPark:
-                        CuyahogaNationalPark();
-                        break;
+                    }
+                        
+                }
 
-                    case Command_Quit:
-                        Console.WriteLine("Thank you for using campground tiny");
-                        break;
-
-                    default:
-                        Console.WriteLine("Invalid command, please try again!");
-                        break;
-
+               
                 }
                 PrintMenu();
             }
-        }
 
-        private void CuyahogaNationalPark()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Arches()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Acadia()
+        private void MainMenuText()
         {
             throw new NotImplementedException();
         }
@@ -80,11 +79,29 @@ namespace Capstone
 
         private void PrintHeader()
         {
-            Console.WriteLine("View Park Interface");
+           
+            
+                Console.WriteLine(@"__    __              __      __                                __        _______                      __             ");
+                Console.WriteLine(@"         /  \  /  |            /  |    /  |                              /  |      /       \                    /  |  ");
+                Console.WriteLine(@"$$  \ $$ |  ______   _$$ |_   $$/   ______   _______    ______  $$ |      $$$$$$$  | ______    ______  $$ |   __   _______");
+                Console.WriteLine(@"$$$  \$$ | /      \ / $$   |  /  | /      \ /       \  /      \ $$ |      $$ |__$$ |/      \  /      \ $$ |  /  | /       |");
+                Console.WriteLine(@"$$$$  $$ | $$$$$$  |$$$$$$/   $$ |/$$$$$$  |$$$$$$$  | $$$$$$  |$$ |      $$    $$/ $$$$$$  |/$$$$$$  |$$ |_/$$/ /$$$$$$$/ ");
+                Console.WriteLine(@"$$ $$ $$ | /    $$ |  $$ | __ $$ |$$ |  $$ |$$ |  $$ | /    $$ |$$ |      $$$$$$$/  /    $$ |$$ |  $$/ $$   $$<  $$      \ ");
+                Console.WriteLine(@"$$ |$$$$ |/$$$$$$$ |  $$ |/  |$$ |$$ \__$$ |$$ |  $$ |/$$$$$$$ |$$ |      $$ |     /$$$$$$$ |$$ |      $$$$$$  \  $$$$$$  |");
+                Console.WriteLine(@"$$ | $$$ |$$    $$ |  $$  $$/ $$ |$$    $$/ $$ |  $$ |$$    $$ |$$ |      $$ |     $$    $$ |$$ |      $$ | $$  |/     $$/ ");
+                Console.WriteLine(@"$$/   $$/  $$$$$$$/    $$$$/  $$/  $$$$$$/  $$/   $$/  $$$$$$$/ $$/       $$/       $$$$$$$/ $$/       $$/   $$/ $$$$$$$/  ");
+                Console.WriteLine();
+            
         }
+
+        
+    }
+
+   
+
+   
 
 
     }
 
-    
-}
+
