@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capstone.DAL
 {
-    class Class1
+    class ReservationSqlDAL
     {
     }
 }

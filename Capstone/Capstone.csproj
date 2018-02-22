@@ -44,14 +44,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DAL\CampgroundSqlDAL.cs" />
+    <Compile Include="DAL\CampisteSqlDAL.cs" />
+    <Compile Include="DAL\ReservationSqlDAL.cs" />
+    <Compile Include="DAL\ParkSqlDAL.cs" />
+    <Compile Include="CLIHelp.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="CapstoneProjectCLI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DAL\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
