@@ -78,19 +78,20 @@ namespace Capstone
                     Console.WriteLine("1) Search for available reservation");
                     Console.WriteLine("2) Return to previous menu");
                     int campgroundMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
+
+                    parkMenuChoice = 2;
                     
                 }
-                else if (parkMenuChoice == 2)
+                if (parkMenuChoice == 2)
                 {
                     
 
                     int campgroundIndex = 0;
                     string startDate = "";
                     string endDate = "";
-                     
 
-
-
+                    DisplayAllCampgroundsInPark(selectedPark.Name);
+                    
                     campgroundIndex = CLIHelper.GetInteger("\nWhich campground (enter 0 to cancel)?  ___ ") - 1;
                     startDate = CLIHelper.GetString("What is the arrival date?  dd/mm/yyyy ");
                     endDate = CLIHelper.GetString("What is the departure date?  dd/mm/yyyy ");
@@ -107,7 +108,15 @@ namespace Capstone
                     {
                         Console.WriteLine(site.Site_Number + " ".PadRight(10)+site.Max_Occupancy+" ".PadRight(10)+site.Accessible+" ".PadRight(10)+site.Max_Rv_Length+" ".PadRight(10)+site.Utilities+" ".PadRight(10)+ campgrounds[campgroundIndex].Daily_Fee);
                     }
+                    Console.WriteLine("Which site to reserve? ");
+                    int siteMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
+                    Console.WriteLine("What name should the reservation be under? ");
+                    string reservationNameChoice = CLIHelper.GetString("\nSELECT:  ");
 
+                    ReservationSqlDAL resDAL = new ReservationSqlDAL(connection);
+                     int reservationId = resDAL.CreateNewReservation(reservationNameChoice, startDate, endDate, siteMenuChoice);
+                    
+                    Console.WriteLine($"The reservation has been made and the confirmation id is {reservationId}");
                 }
             }
             catch (SqlException ex)

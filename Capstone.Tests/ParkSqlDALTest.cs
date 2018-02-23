@@ -25,7 +25,7 @@ namespace Capstone.Tests
             {
                 ParkSqlDALTest.InsertFakePark(0, "test", (Convert.ToDateTime("1/15/1990")), "Cleveland", 1000, 42, "An amusing campsite");
 
-                ParkSqlDAL testClass = new ParkSqlDAL(connection);
+                DAL.ParkSqlDAL testClass = new DAL.ParkSqlDAL(connection);
 
                 List<Park> park = testClass.GetAllParks();
 

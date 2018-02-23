@@ -22,6 +22,7 @@ namespace Capstone.DAL
         {
             int reservationId = 0;
 
+
             try
             {
                 
@@ -53,7 +54,7 @@ namespace Capstone.DAL
         }
 
         
-        public List<Reservation> GetAllReservations(string campgroundName)
+        public List<Reservation> GetAllReservations(string CampgroundName)
         {
             List<Reservation> output = new List<Reservation>();
 
@@ -69,7 +70,7 @@ namespace Capstone.DAL
                                                     "INNER JOIN campground ON site.campground_id = campground.campground_id" +
                                                     " WHERE campground.name = @campgroundName;", conn);
                     
-                    cmd.Parameters.AddWithValue("@campgroundName", campgroundName);
+                    cmd.Parameters.AddWithValue("@campgroundName", CampgroundName);
 
                    
                     SqlDataReader reader = cmd.ExecuteReader();
