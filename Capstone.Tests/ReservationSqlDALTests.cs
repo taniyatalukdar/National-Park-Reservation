@@ -22,16 +22,16 @@ namespace Capstone.Tests
         {
             using (TransactionScope transaction = new TransactionScope())
             {
-                //ReservationSqlDALTests.InsertFakeReservation(17, "Greg", "4/15/2018", "4/18/2018", "2/23/2018");
+                
+
+                int id =ReservationSqlDALTests.InsertFakeReservation(17, "Greg", "4/15/2018", "4/18/2018", Convert.ToString(DateTime.Now));
                 ReservationSqlDAL testClass = new ReservationSqlDAL(connection);
-                Reservation newReservation = new Reservation();
-                newReservation.SiteId = 46;
-                newReservation.Name = "Greg";
-                newReservation.From_Date = Convert.ToDateTime("4/15/2018");
-                newReservation.To_Date = Convert.ToDateTime("4/18/3028");
-                newReservation.Create_Date = Convert.ToDateTime("2/23/2018");
-                bool reservations = testClass.CreateNewReservation(newReservation);
-                Assert.IsTrue(reservations);
+
+                List<Reservation> reservations = testClass.GetAllReservations("Seawall");
+
+                bool containsReservation = reservations.Exists(r => r.ReservationId == id);
+               
+                Assert.IsTrue(containsReservation);
 
             }
 
@@ -40,13 +40,18 @@ namespace Capstone.Tests
         {
             using (SqlConnection conn = new SqlConnection(connection))
             {
+                conn.Open();
+
                 SqlCommand cmd = new SqlCommand("insert into reservation Values(@siteId, @reservationName, @startDate, @endDate, @createDate)", conn);
+
                 cmd.Parameters.AddWithValue("@siteId", SiteId);
                 cmd.Parameters.AddWithValue("@reservationName", ReservationName);
                 cmd.Parameters.AddWithValue("@startDate", StartDate);
                 cmd.Parameters.AddWithValue("@endDate", EndDate);
+                cmd.Parameters.AddWithValue("@createDate", CreateDate);
 
                 cmd.ExecuteNonQuery();
+
                 cmd = new SqlCommand("select max(reservation_id) from reservation", conn);
                 int result = Convert.ToInt32(cmd.ExecuteScalar());
                 return result;

@@ -18,9 +18,9 @@ namespace Capstone.DAL
         }
 
         
-        public bool CreateNewReservation(Reservation newReservation)
+        public int CreateNewReservation(int SiteId, string ReservationName, string StartDate, string EndDate, string CreateDate)
         {
-            bool reservationId = true;
+            int reservationId = 0;
 
 
             try
@@ -30,23 +30,25 @@ namespace Capstone.DAL
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand(@"INSERT INTO reservation (site_id, name, from_date, to_date) " +
+                    SqlCommand cmd = new SqlCommand(@"INSERT INTO reservation (site_Id, name, from_date, to_date) " +
                                                     "VALUES (@siteId, @reservationName, @arrivalDate, @departDate);", conn);
 
-                    cmd.Parameters.AddWithValue("@siteId",newReservation.SiteId);
-                    cmd.Parameters.AddWithValue("@reservationName", newReservation.Name);
-                    cmd.Parameters.AddWithValue("@arrivalDate", newReservation.From_Date);
-                    cmd.Parameters.AddWithValue("@departDate", newReservation.To_Date);
+                    cmd.Parameters.AddWithValue("@siteId", SiteId);
+                    cmd.Parameters.AddWithValue("@reservationName", ReservationName);
+                    cmd.Parameters.AddWithValue("@arrivalDate", StartDate);
+                    cmd.Parameters.AddWithValue("@departDate", EndDate);
 
                     cmd.ExecuteNonQuery();
 
-                    
+                    cmd = new SqlCommand("SELECT MAX(reservation_id) FROM reservation;", conn);
+                    reservationId = Convert.ToInt32(cmd.ExecuteScalar());
+
                 }
             }
             catch (SqlException e)
             {
                 Console.WriteLine("An error occurred. " + e.Message);
-                reservationId = false;
+                throw;
             }
 
             return reservationId;
@@ -64,10 +66,7 @@ namespace Capstone.DAL
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM reservation " +
-                                                    "INNER JOIN site ON reservation.site_id = site.site_id," +
-                                                    "INNER JOIN campground ON site.campground_id = campground.campground_id" +
-                                                    " WHERE campground.name = @campgroundName;", conn);
+                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM reservation INNER JOIN site ON reservation.site_id = site.site_id INNER JOIN campground ON site.campground_id = campground.campground_id WHERE campground.name = @campgroundName;", conn);
                     
                     cmd.Parameters.AddWithValue("@campgroundName", CampgroundName);
 
@@ -76,7 +75,15 @@ namespace Capstone.DAL
 
                     while (reader.Read())
                     {
-                        output.Add(PopulateReservation(reader));
+                        Reservation r = new Reservation();
+                        r.ReservationId = (int)reader["reservation_id"];
+                        r.SiteId = (int)reader["site_id"];
+                        r.Name = (string)reader["name"];
+                        r.From_Date = Convert.ToDateTime(reader["from_date"]);
+                        r.To_Date = Convert.ToDateTime(reader["to_date"]);
+                        r.Create_Date = Convert.ToDateTime(reader["from_date"]);
+
+                        output.Add(r);
                     }
                 }
             }
