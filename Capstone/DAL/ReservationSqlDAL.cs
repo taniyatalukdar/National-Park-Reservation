@@ -18,14 +18,14 @@ namespace Capstone.DAL
         }
 
         
-        public int CreateNewReservation(string reservationName, string startDate, string endDate, int siteId)
+        public bool CreateNewReservation(Reservation newReservation)
         {
-            int reservationId = 0;
+            bool reservationId = true;
 
 
             try
             {
-                
+
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
@@ -33,21 +33,20 @@ namespace Capstone.DAL
                     SqlCommand cmd = new SqlCommand(@"INSERT INTO reservation (site_id, name, from_date, to_date) " +
                                                     "VALUES (@siteId, @reservationName, @arrivalDate, @departDate);", conn);
 
-                    cmd.Parameters.AddWithValue("@siteId", siteId);
-                    cmd.Parameters.AddWithValue("@reservationName", reservationName);
-                    cmd.Parameters.AddWithValue("@arrivalDate", startDate);
-                    cmd.Parameters.AddWithValue("@departDate", endDate);
+                    cmd.Parameters.AddWithValue("@siteId",newReservation.SiteId);
+                    cmd.Parameters.AddWithValue("@reservationName", newReservation.Name);
+                    cmd.Parameters.AddWithValue("@arrivalDate", newReservation.From_Date);
+                    cmd.Parameters.AddWithValue("@departDate", newReservation.To_Date);
 
                     cmd.ExecuteNonQuery();
 
-                    cmd = new SqlCommand("SELECT MAX(reservation_id) FROM reservation;", conn);
-                    reservationId = Convert.ToInt32(cmd.ExecuteScalar());
+                    
                 }
             }
             catch (SqlException e)
             {
                 Console.WriteLine("An error occurred. " + e.Message);
-                throw;
+                reservationId = false;
             }
 
             return reservationId;

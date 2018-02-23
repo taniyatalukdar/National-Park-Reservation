@@ -113,10 +113,10 @@ namespace Capstone
                     Console.WriteLine("What name should the reservation be under? ");
                     string reservationNameChoice = CLIHelper.GetString("\nSELECT:  ");
 
-                    ReservationSqlDAL resDAL = new ReservationSqlDAL(connection);
-                     int reservationId = resDAL.CreateNewReservation(reservationNameChoice, startDate, endDate, siteMenuChoice);
+                    //ReservationSqlDAL resDAL = new ReservationSqlDAL(connection);
+                    // resDAL.CreateNewReservation(Reservation newReservation);
                     
-                    Console.WriteLine($"The reservation has been made and the confirmation id is {reservationId}");
+                    //Console.WriteLine($"The reservation has been made and the confirmation id is {reservationId}");
                 }
             }
             catch (SqlException ex)
