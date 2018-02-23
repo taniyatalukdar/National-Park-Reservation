@@ -17,7 +17,8 @@ namespace Capstone.DAL
             connectionString = databaseConnectionString;
         }
         
-        public List<Campsite> GetAllSitesInCampground(string campgroundName)
+
+        public List<Campsite> GetAvailableSitesInCampground(int campgroundId, DateTime arrivalDate, DateTime departDate)
         {
             List<Campsite> output = new List<Campsite>();
 
@@ -27,54 +28,18 @@ namespace Capstone.DAL
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM site " +
-                                                    "INNER JOIN campground ON site.campground_id = campground.campground_id" +
-                                                    " WHERE campground.name = @campgroundName;", conn);
-                    
-                    cmd.Parameters.AddWithValue("@campgroundName", campgroundName);
 
-                    SqlDataReader reader = cmd.ExecuteReader();
 
-                    while (reader.Read())
-                    {
-                        output.Add(PopulateSite(reader));
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine("An error occurred. " + ex.Message);
-                throw;
-            }
+                    SqlCommand cmd = new SqlCommand("select * from site INNER JOIN campground ON site.campground_id = campground.campground_id " +
+                                                    "where site_id not in((select site_id from reservation where (@arrivalDate <= from_date and @departDate >= to_date)" +
+                                                    " or(@arrivalDate >= from_date and @departDate < to_date) or(@arrivalDate > from_date and @departDate <= to_date))) and site.campground_id = @campgroundId;", conn);
 
-            return output;
-        }
-        
-        public List<Campsite> GetAvailableSitesInCampground(string campgroundName, DateTime arrivalDate, DateTime departDate)
-        {
-            List<Campsite> output = new List<Campsite>();
 
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-
-                    SqlCommand cmd = new SqlCommand(@"SELECT  * FROM site " +
-                                                    "INNER JOIN campground ON site.campground_id = campground.campground_id " +
-                                                    "WHERE campground.name = @campgroundName AND site_id NOT IN " +
-                                                    "(SELECT site_id FROM reservation WHERE " +
-                                                    "from_date Between '03/15/2018' AND '10/25/2018' OR " +
-                                                    "to_date Between '03/15/2018' AND '10/25/2018' OR " +
-                                                    "(from_date Between '03/15/2018' AND '10/25/2018' AND to_date Between '03/15/2018' AND '10/25/2018') " +
-                                                    "OR from_date< '03/15/2018' AND to_date > '10/25/2018');", conn);
-
-                    
-                    cmd.Parameters.AddWithValue("@campgroundName", campgroundName);
+                    cmd.Parameters.AddWithValue("@campgroundId", campgroundId);
                     cmd.Parameters.AddWithValue("@arrivalDate", arrivalDate);
                     cmd.Parameters.AddWithValue("@departDate", departDate);
 
-                    
+
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     while (reader.Read())
@@ -92,52 +57,7 @@ namespace Capstone.DAL
             return output;
 
         }
-
-
         
-        public List<Campsite> GetReservedSitesInCampground(string campgroundName, string arrivalDate, string departDate)
-        {
-            List<Campsite> output = new List<Campsite>();
-
-            try
-            {
-                
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-
-                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM reservation " +
-                                                    " INNER JOIN site ON reservation.site_id = site.site_id" +
-                                                    " INNER JOIN campground ON site.campground_id = campground.campground_id " +
-                                                    " WHERE campground.name = @campgroundName " +
-                                                    " AND exists (SELECT * FROM reservation" +
-                                                    " WHERE @arrivalDate NOT BETWEEN (select min(from_date) from reservation) " +
-                                                    " AND (select max(to_date) from reservation));", conn);
-
-                    
-                    cmd.Parameters.AddWithValue("@campgroundName", campgroundName);
-                    cmd.Parameters.AddWithValue("@arrivalDate", arrivalDate);
-                    cmd.Parameters.AddWithValue("@departDate", departDate);
-
-                    
-                    SqlDataReader reader = cmd.ExecuteReader();
-
-                    while (reader.Read())
-                    {
-                        output.Add(PopulateSite(reader));
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine("An error occurred. " + ex.Message);
-                throw;
-            }
-
-            return output;
-
-        }
-
         public Campsite PopulateSite(SqlDataReader reader)
         {
             Campsite s = new Campsite();

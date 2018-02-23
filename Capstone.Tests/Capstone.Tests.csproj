@@ -57,7 +57,7 @@
     <Compile Include="ParkSqlDALTest.cs" />
     <Compile Include="CampgroundSqlDALTest.cs" />
     <Compile Include="ReservationSqlDALTests.cs" />
-    <Compile Include="ParkSqlDAL.cs" />
+    <Compile Include="CampsiteSqlDALTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Capstone\Capstone.csproj">

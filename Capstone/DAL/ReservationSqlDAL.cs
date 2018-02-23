@@ -18,7 +18,7 @@ namespace Capstone.DAL
         }
 
         
-        public int CreateNewReservation(int SiteId, string ReservationName, string StartDate, string EndDate, string CreateDate)
+        public int CreateNewReservation(int SiteId, string ReservationName, DateTime StartDate, DateTime EndDate, string CreateDate)
         {
             int reservationId = 0;
 

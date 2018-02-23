@@ -87,36 +87,45 @@ namespace Capstone
                     
 
                     int campgroundIndex = 0;
-                    string startDate = "";
-                    string endDate = "";
+                    DateTime startDate;
+                    DateTime endDate;
+                    
 
                     DisplayAllCampgroundsInPark(selectedPark.Name);
                     
                     campgroundIndex = CLIHelper.GetInteger("\nWhich campground (enter 0 to cancel)?  ___ ") - 1;
-                    startDate = CLIHelper.GetString("What is the arrival date?  dd/mm/yyyy ");
-                    endDate = CLIHelper.GetString("What is the departure date?  dd/mm/yyyy ");
-
+                    startDate = CLIHelper.GetDateTime("What is the arrival date?  dd/mm/yyyy ");
+                    endDate = CLIHelper.GetDateTime("What is the departure date?  dd/mm/yyyy ");
+                    TimeSpan lengthOfStay = endDate.Subtract(startDate);
                     SiteSqlDAL siteDAL = new SiteSqlDAL(connection);
-                    List<Campsite> availableCampsites = siteDAL.GetAvailableSitesInCampground(campgrounds[campgroundIndex].Name,Convert.ToDateTime(startDate),Convert.ToDateTime(endDate));
+                    List<Campsite> availableCampsites = siteDAL.GetAvailableSitesInCampground(campgrounds[campgroundIndex].CampgroundId,Convert.ToDateTime(startDate),Convert.ToDateTime(endDate));
 
-                    Console.Write("".PadRight(75, '_'));
-                    Console.WriteLine("\nRESULTS MATCHING YOUR SEARCH CRITERIA");
-                    Console.WriteLine("Available Camp Sites at " + selectedPark + " National Park, " + campgrounds[campgroundIndex].Name + " Campground");
-                    Console.WriteLine("Site No.".PadRight(10) + "Max Occup.".PadRight(12) + "Accessible?".PadRight(15) + "Max RV Length".PadRight(15)
-                        + "Utility".PadRight(10) + "Cost");
+                    //Console.Write("".PadRight(75, '_'));
+                    //Console.WriteLine("\nRESULTS MATCHING YOUR SEARCH CRITERIA");
+                    //Console.WriteLine("Available Camp Sites at " + selectedPark + " National Park, " + campgrounds[campgroundIndex].Name + " Campground");
+                    //Console.WriteLine("Site No.".PadRight(10) + "Max Occup.".PadRight(12) + "Accessible?".PadRight(15) + "Max RV Length".PadRight(15)
+                    //    + "Utility".PadRight(10) + "Cost");
+
+                    int count = 0;
                     foreach (Campsite site in availableCampsites)
                     {
-                        Console.WriteLine(site.Site_Number + " ".PadRight(10)+site.Max_Occupancy+" ".PadRight(10)+site.Accessible+" ".PadRight(10)+site.Max_Rv_Length+" ".PadRight(10)+site.Utilities+" ".PadRight(10)+ campgrounds[campgroundIndex].Daily_Fee);
+                        Console.WriteLine(site.Site_Number + " ".PadRight(10)+site.Max_Occupancy+" ".PadRight(10)+site.Accessible+" ".PadRight(10)+site.Max_Rv_Length+" ".PadRight(10)+site.Utilities+" ".PadRight(10)+ (campgrounds[campgroundIndex].Daily_Fee));
+                        count++;
+                        if(count == 5)
+                        {
+                            break;
+                        }
                     }
+
                     Console.WriteLine("Which site to reserve? ");
                     int siteMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
                     Console.WriteLine("What name should the reservation be under? ");
                     string reservationNameChoice = CLIHelper.GetString("\nSELECT:  ");
-
-                    //ReservationSqlDAL resDAL = new ReservationSqlDAL(connection);
-                    // resDAL.CreateNewReservation(Reservation newReservation);
                     
-                    //Console.WriteLine($"The reservation has been made and the confirmation id is {reservationId}");
+                    ReservationSqlDAL resDAL = new ReservationSqlDAL(connection);
+                     int reservationId = resDAL.CreateNewReservation(siteMenuChoice, reservationNameChoice, startDate, endDate,Convert.ToString(DateTime.Now));
+
+                    Console.WriteLine($"The reservation has been made and the confirmation id is {reservationId}");
                 }
             }
             catch (SqlException ex)
@@ -124,6 +133,12 @@ namespace Capstone
                 Console.WriteLine("An error has occurred: " + ex.Message);
                 throw;
             }
+            catch(FormatException ex)
+            {
+                Console.WriteLine("Incorrect input: "+ ex.Message);
+                
+            }
+            
         }
 
 
