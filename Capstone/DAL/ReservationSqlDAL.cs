@@ -55,7 +55,7 @@ namespace Capstone.DAL
         }
 
         
-        public List<Reservation> GetAllReservations(string CampgroundName)
+        public List<Reservation> GetAllReservations(string campgroundName)
         {
             List<Reservation> output = new List<Reservation>();
 
@@ -68,9 +68,50 @@ namespace Capstone.DAL
 
                     SqlCommand cmd = new SqlCommand(@"SELECT * FROM reservation INNER JOIN site ON reservation.site_id = site.site_id INNER JOIN campground ON site.campground_id = campground.campground_id WHERE campground.name = @campgroundName;", conn);
                     
-                    cmd.Parameters.AddWithValue("@campgroundName", CampgroundName);
-
+                    
+                    cmd.Parameters.AddWithValue("@campgroundName", campgroundName);
                    
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Reservation r = new Reservation();
+                        r.ReservationId = (int)reader["reservation_id"];
+                        r.SiteId = (int)reader["site_id"];
+                        r.Name = (string)reader["name"];
+                        r.From_Date = Convert.ToDateTime(reader["from_date"]);
+                        r.To_Date = Convert.ToDateTime(reader["to_date"]);
+                        r.Create_Date = Convert.ToDateTime(reader["from_date"]);
+
+                        output.Add(r);
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("An error occurred. " + ex.Message);
+                throw;
+            }
+
+            return output;
+        }
+
+        public List<Reservation> GetReservationById(string campgroundName)
+        {
+            List<Reservation> output = new List<Reservation>();
+
+            try
+            {
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM reservation INNER JOIN site ON reservation.site_id = site.site_id INNER JOIN campground ON site.campground_id = campground.campground_id WHERE campground.name = @campgroundName;", conn);
+
+                    cmd.Parameters.AddWithValue("@campgroundName", campgroundName);
+
+
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     while (reader.Read())

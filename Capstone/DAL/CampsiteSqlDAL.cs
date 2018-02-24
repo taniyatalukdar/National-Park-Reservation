@@ -17,6 +17,32 @@ namespace Capstone.DAL
             connectionString = databaseConnectionString;
         }
         
+        public List<Campsite> GetAllCampSites(int campgroundId)
+        {
+            List<Campsite> output = new List<Campsite>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM site JOIN campground ON site.campground_id = campground.campground_id", conn);
+
+                    cmd.Parameters.AddWithValue("@campgroundId", campgroundId);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        output.Add(PopulateSite(reader));
+                    }
+                }
+            }
+            catch(SqlException ex)
+            {
+                Console.WriteLine("An error occured, please try again!" + ex.Message);
+                throw;
+            }
+            return output;
+        }
 
         public List<Campsite> GetAvailableSitesInCampground(int campgroundId, DateTime arrivalDate, DateTime departDate)
         {
@@ -27,9 +53,6 @@ namespace Capstone.DAL
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-
-
-
                     SqlCommand cmd = new SqlCommand("select TOP 5 * " +
                                                     "from site " +
                                                     "JOIN campground ON site.campground_id = campground.campground_id " +
@@ -70,7 +93,10 @@ namespace Capstone.DAL
             return output;
 
         }
-        
+
+      
+
+
         public Campsite PopulateSite(SqlDataReader reader)
         {
             Campsite s = new Campsite();

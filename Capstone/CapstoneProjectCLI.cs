@@ -84,7 +84,6 @@ namespace Capstone
                 }
                 if (parkMenuChoice == 2)
                 {
-                    
 
                     int campgroundIndex = 0;
                     DateTime startDate;

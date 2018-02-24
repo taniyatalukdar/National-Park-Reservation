@@ -13,11 +13,6 @@ namespace Capstone.Tests
     {
         public static string connection = @"Server=.\SqlExpress;Database=campground-tiny;Trusted_Connection=true";
 
-        //public ParkSqlDALTest(string dbconnectionString)
-        //{
-        //    connectionString = dbconnectionString;
-        //}
-
         [TestMethod]
         public void GetAllParks()
         {
@@ -32,6 +27,21 @@ namespace Capstone.Tests
                 Assert.AreEqual(4, park.Count);
             }
         }
+        [TestMethod]
+        public void SearchParkByNameTest()
+        {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ParkSqlDALTest.InsertFakePark(10, "test", (Convert.ToDateTime("1/15/1990")), "Hilton Head", 2000, 20000, "Laidback");
+
+                DAL.ParkSqlDAL testClass = new DAL.ParkSqlDAL(connection);
+
+                List<Park> parks = testClass.SearchParkByName("test");
+
+                Assert.AreEqual("test", parks[3].Name);
+            }
+        }
+
 
         public static int InsertFakePark(int Id, string Name, DateTime establishDate, string Location, int area, int visitors, string description)
         {
