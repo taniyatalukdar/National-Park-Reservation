@@ -30,9 +30,22 @@ namespace Capstone.DAL
 
 
 
-                    SqlCommand cmd = new SqlCommand("select * from site INNER JOIN campground ON site.campground_id = campground.campground_id " +
-                                                    "where site_id not in((select site_id from reservation where (@arrivalDate <= from_date and @departDate >= to_date)" +
-                                                    " or(@arrivalDate >= from_date and @departDate < to_date) or(@arrivalDate > from_date and @departDate <= to_date))) and site.campground_id = @campgroundId;", conn);
+                    SqlCommand cmd = new SqlCommand("select TOP 5 * " +
+                                                    "from site " +
+                                                    "JOIN campground ON site.campground_id = campground.campground_id " +
+                                                    "JOIN park on park.park_id = campground.park_id " +
+                                                    "where site.site_id not in " +
+                                                    "    ((select reservation.site_id " +
+                                                    "    from reservation " +
+                                                    "    where " +
+                                                    "        (@arrivalDate <= from_date and @departDate >= to_date) " +
+                                                    "        or(@arrivalDate >= from_date and @arrivalDate < to_date) " +
+                                                    "        or(@departDate > from_date and @departDate <= to_date))) " +
+                                                   // "        and ((1 >= campground.open_from_mm and  " +  
+                                                   // "        1 <= campground.open_to_mm) and " +
+                                                   // "        (3 >= campground.open_from_mm and " +
+                                                   // "        3 <= campground.open_to_mm)) " +
+                                                    "        and site.campground_id = @campgroundId;", conn);
 
 
                     cmd.Parameters.AddWithValue("@campgroundId", campgroundId);

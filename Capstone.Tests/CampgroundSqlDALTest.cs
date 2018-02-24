@@ -12,7 +12,7 @@ namespace Capstone.Tests
     public class CampgroundSqlDALTest
     {
       
-           public static string connection = @"Server=.\SqlExpress;Database=campground-tiny;Trusted_Connection=true";
+       public static string connection = @"Server=.\SqlExpress;Database=campground-tiny;Trusted_Connection=true";
 
 
         [TestMethod]
@@ -30,7 +30,7 @@ namespace Capstone.Tests
             }
         }
 
-        private static int InsertFakeCampground(int CampgroundId, int ParkId, string Name, int OpenFromMm, int OpenToMm, int DailyFee )
+        public static int InsertFakeCampground(int CampgroundId, int ParkId, string Name, int OpenFromMm, int OpenToMm, int DailyFee )
         {
             using (SqlConnection conn = new SqlConnection(connection))
             {

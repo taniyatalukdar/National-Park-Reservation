@@ -105,20 +105,27 @@ namespace Capstone
                     //Console.WriteLine("Available Camp Sites at " + selectedPark + " National Park, " + campgrounds[campgroundIndex].Name + " Campground");
                     //Console.WriteLine("Site No.".PadRight(10) + "Max Occup.".PadRight(12) + "Accessible?".PadRight(15) + "Max RV Length".PadRight(15)
                     //    + "Utility".PadRight(10) + "Cost");
+                    if(availableCampsites.Count < 1)
+                    {
+                        Console.WriteLine("No available campsites");
+                        RunCLI();
+                    }
 
                     int count = 0;
                     foreach (Campsite site in availableCampsites)
                     {
                         Console.WriteLine(site.Site_Number + " ".PadRight(10)+site.Max_Occupancy+" ".PadRight(10)+site.Accessible+" ".PadRight(10)+site.Max_Rv_Length+" ".PadRight(10)+site.Utilities+" ".PadRight(10)+ (campgrounds[campgroundIndex].Daily_Fee));
                         count++;
-                        if(count == 5)
-                        {
-                            break;
-                        }
+                        //if(count == 5)
+                        //{
+                        //    break;
+                        //}
                     }
 
                     Console.WriteLine("Which site to reserve? ");
                     int siteMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
+                    //if(!availableCampsites.Contains(siteMenuChoice))
+
                     Console.WriteLine("What name should the reservation be under? ");
                     string reservationNameChoice = CLIHelper.GetString("\nSELECT:  ");
                     

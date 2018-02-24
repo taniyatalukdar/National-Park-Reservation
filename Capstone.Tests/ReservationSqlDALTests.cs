@@ -36,7 +36,7 @@ namespace Capstone.Tests
             }
 
     }
-        private static int InsertFakeReservation(int SiteId, string ReservationName, string StartDate, string EndDate, string CreateDate)
+        public static int InsertFakeReservation(int SiteId, string ReservationName, string StartDate, string EndDate, string CreateDate)
         {
             using (SqlConnection conn = new SqlConnection(connection))
             {
