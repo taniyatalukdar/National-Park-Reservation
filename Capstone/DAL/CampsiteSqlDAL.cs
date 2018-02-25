@@ -61,9 +61,11 @@ namespace Capstone.DAL
                                                     "    ((select reservation.site_id " +
                                                     "    from reservation " +
                                                     "    where " +
-                                                    "        (@arrivalDate <= from_date and @departDate >= to_date) " +
+                                                    "        (from_date > @arrivalDate and from_date < @departDate) " +
+                                                    "        or(to_date > @arrivalDate and to_Date < @departDate) " +
                                                     "        or(@arrivalDate >= from_date and @arrivalDate < to_date) " +
-                                                    "        or(@departDate > from_date and @departDate <= to_date))) " +
+                                                    "        or(@departDate >= to_date and @departDate < from_date)" +
+                                                    "        )) " +
                                                    // "        and ((1 >= campground.open_from_mm and  " +  
                                                    // "        1 <= campground.open_to_mm) and " +
                                                    // "        (3 >= campground.open_from_mm and " +
