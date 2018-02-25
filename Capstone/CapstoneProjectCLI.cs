@@ -17,26 +17,29 @@ namespace Capstone
         public static string connection = @"Server=.\SqlExpress;Database=campground-tiny;Trusted_Connection=true";
 
         public Park selectedPark;
-        //const string Command_GetAllParks = "1";
-        //const string Command_Acadia = "2";
-        //const string Command_Arches = "3";
-        //const string Command_CuyahogaNationalValleyPark = "4";
-        //const string Command_Quit = "Q";
-
+        
         public void RunCLI()
         {
             try
             {
                 PrintHeader();
                 PrintParks();
-
-                // Prompt the user for a park
+                
                 Console.WriteLine("Please select an option");
 
-                // Ask them to select one of the parks from the menu.
                 int userSelection = int.Parse(Console.ReadLine());
 
-                // Get the park name that goes with their selection
+                if (userSelection == 0)
+                {
+                    Console.WriteLine("Thank you for using National Park Reservation Program!");
+                    return;
+                }
+                while(userSelection > 3 || userSelection < 0)
+                {
+                    Console.WriteLine("Please try again.");
+                    userSelection = int.Parse(Console.ReadLine());
+                }
+
                 ParkSqlDAL dal = new ParkSqlDAL(connection);
                 List<Park> parks = dal.GetAllParks();
                 Park selectedPark = new Park(); 
@@ -47,27 +50,16 @@ namespace Capstone
                         selectedPark = park;
                     }
                 }
+                PrintParkInfo(selectedPark);
 
-                Console.WriteLine(selectedPark.Name + " National Park");
-                Console.WriteLine("______________________________________________");
-                Console.WriteLine("Location:".PadRight(20) + selectedPark.Location);
-                Console.WriteLine("Established:".PadRight(20) + selectedPark.Establish_Date);
-                Console.WriteLine("Area:".PadRight(20) + string.Format("{0:n0}", selectedPark.Area) + " sq km");
-                Console.WriteLine("Annual Visitors:".PadRight(20) + string.Format("{0:n0}", selectedPark.Visitors));
-                Console.WriteLine("\n" + selectedPark.Description + "\n");
-                Console.WriteLine();
-                Console.WriteLine();
-
-
-                // Display Campgrounds for that park
-
-                Console.WriteLine("Select a Command");
-                Console.WriteLine("".PadRight(5) + "1) View Campgrounds");
-                Console.WriteLine("".PadRight(5) + "2) Search for Reservation");
-                Console.WriteLine("".PadRight(5) + "3) Return to Previous Screen");
+                PrintCampgroundMenu();
                 int parkMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
-
-
+                while(parkMenuChoice < 0 || parkMenuChoice > 3)
+                {
+                    Console.WriteLine("Invalid input");
+                    parkMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
+                }
+                
                 CampgroundSqlDAL campDAL = new CampgroundSqlDAL(connection);
                 List<Campground> campgrounds = campDAL.GetAllCampgroundsInPark(selectedPark.Name);
                 if (parkMenuChoice == 1)
@@ -79,32 +71,53 @@ namespace Capstone
                     Console.WriteLine("2) Return to previous menu");
                     int campgroundMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
 
+                    if(campgroundMenuChoice == 2)
+                    {
+                        Console.Clear();
+                        RunCLI();
+                    }
                     parkMenuChoice = 2;
-                    
                 }
                 if (parkMenuChoice == 2)
                 {
-
                     int campgroundIndex = 0;
                     DateTime startDate;
                     DateTime endDate;
                     
-
                     DisplayAllCampgroundsInPark(selectedPark.Name);
                     
                     campgroundIndex = CLIHelper.GetInteger("\nWhich campground (enter 0 to cancel)?  ___ ") - 1;
+                    while(campgroundIndex < -1 || campgroundIndex > 2)
+                    {
+                        Console.WriteLine("Invalid input");
+                        DisplayAllCampgroundsInPark(selectedPark.Name);
+                        campgroundIndex = CLIHelper.GetInteger("\nWhich campground (enter 0 to cancel)?  ___ ") - 1;
+                    }
+                    if(campgroundIndex == -1)
+                    {
+                        RunCLI();
+                    }
                     startDate = CLIHelper.GetDateTime("What is the arrival date?  dd/mm/yyyy ");
                     endDate = CLIHelper.GetDateTime("What is the departure date?  dd/mm/yyyy ");
                     TimeSpan lengthOfStay = endDate.Subtract(startDate);
+                    int stayLength = (int)lengthOfStay.TotalDays;
+
                     SiteSqlDAL siteDAL = new SiteSqlDAL(connection);
                     List<Campsite> availableCampsites = siteDAL.GetAvailableSitesInCampground(campgrounds[campgroundIndex].CampgroundId,Convert.ToDateTime(startDate),Convert.ToDateTime(endDate));
 
-                    //Console.Write("".PadRight(75, '_'));
-                    //Console.WriteLine("\nRESULTS MATCHING YOUR SEARCH CRITERIA");
-                    //Console.WriteLine("Available Camp Sites at " + selectedPark + " National Park, " + campgrounds[campgroundIndex].Name + " Campground");
-                    //Console.WriteLine("Site No.".PadRight(10) + "Max Occup.".PadRight(12) + "Accessible?".PadRight(15) + "Max RV Length".PadRight(15)
-                    //    + "Utility".PadRight(10) + "Cost");
-                    if(availableCampsites.Count < 1)
+                    if(stayLength < 1)
+                    {
+                        Console.WriteLine("Invalid length of stay");
+                        startDate = CLIHelper.GetDateTime("What is the arrival date?  dd/mm/yyyy ");
+                        endDate = CLIHelper.GetDateTime("What is the departure date?  dd/mm/yyyy ");
+
+                    }
+                    Console.Write("".PadRight(75, '_'));
+                    Console.WriteLine("\nRESULTS MATCHING YOUR SEARCH CRITERIA");
+                    Console.WriteLine("Available Camp Sites at " + selectedPark + " National Park, " + campgrounds[campgroundIndex].Name + " Campground");
+                    Console.WriteLine("Site No.".PadRight(10) + "Max Occup.".PadRight(12) + "Accessible?".PadRight(15) + "Max RV Length".PadRight(15)
+                        + "Utility".PadRight(10) + "Cost");
+                    if (availableCampsites.Count < 1)
                     {
                         Console.WriteLine("No available campsites");
                         RunCLI();
@@ -113,18 +126,18 @@ namespace Capstone
                     int count = 0;
                     foreach (Campsite site in availableCampsites)
                     {
-                        Console.WriteLine(site.Site_Number + " ".PadRight(10)+site.Max_Occupancy+" ".PadRight(10)+site.Accessible+" ".PadRight(10)+site.Max_Rv_Length+" ".PadRight(10)+site.Utilities+" ".PadRight(10)+ (campgrounds[campgroundIndex].Daily_Fee));
+                        Console.WriteLine(count+ site.Site_Number + " ".PadRight(10)+site.Max_Occupancy+" ".PadRight(10)+site.Accessible+" ".PadRight(10)+site.Max_Rv_Length+" ".PadRight(13)+site.Utilities+" ".PadRight(7)+ (campgrounds[campgroundIndex].Daily_Fee * stayLength));
                         count++;
-                        //if(count == 5)
-                        //{
-                        //    break;
-                        //}
                     }
 
                     Console.WriteLine("Which site to reserve? ");
                     int siteMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
-                    //if(!availableCampsites.Contains(siteMenuChoice))
-
+                    if(siteMenuChoice < 1 || siteMenuChoice > availableCampsites.Count)
+                    {
+                        Console.WriteLine("Invalid Choice");
+                        siteMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
+                    }
+                   
                     Console.WriteLine("What name should the reservation be under? ");
                     string reservationNameChoice = CLIHelper.GetString("\nSELECT:  ");
                     
@@ -133,6 +146,8 @@ namespace Capstone
 
                     Console.WriteLine($"The reservation has been made and the confirmation id is {reservationId}");
                 }
+                
+                
             }
             catch (SqlException ex)
             {
@@ -142,6 +157,7 @@ namespace Capstone
             catch(FormatException ex)
             {
                 Console.WriteLine("Incorrect input: "+ ex.Message);
+                RunCLI();
                 
             }
             
@@ -167,7 +183,7 @@ namespace Capstone
 
         private void PrintParks()
         {
-            Console.WriteLine("Please select one of the following option.");
+            Console.WriteLine("Please select one of the following option (press 0 to exit).");
             
             ParkSqlDAL dal = new ParkSqlDAL(connection);
             List<Park> parks = dal.GetAllParks();
@@ -180,9 +196,6 @@ namespace Capstone
             }
         }
         
-
-
-
         private void PrintHeader()
         {
 
@@ -199,7 +212,26 @@ namespace Capstone
             Console.WriteLine();
 
         }
-        
+        private void PrintParkInfo(Park selectedPark)
+        {
+            Console.WriteLine(selectedPark.Name + " National Park");
+            Console.WriteLine("______________________________________________");
+            Console.WriteLine("Location:".PadRight(20) + selectedPark.Location);
+            Console.WriteLine("Established:".PadRight(20) + selectedPark.Establish_Date);
+            Console.WriteLine("Area:".PadRight(20) + string.Format("{0:n0}", selectedPark.Area) + " sq km");
+            Console.WriteLine("Annual Visitors:".PadRight(20) + string.Format("{0:n0}", selectedPark.Visitors));
+            Console.WriteLine("\n" + selectedPark.Description + "\n");
+            Console.WriteLine();
+            Console.WriteLine();
+
+        }
+        private void PrintCampgroundMenu()
+        {
+            Console.WriteLine("Select a Command");
+            Console.WriteLine("".PadRight(5) + "1) View Campgrounds");
+            Console.WriteLine("".PadRight(5) + "2) Search for Reservation");
+            Console.WriteLine("".PadRight(5) + "3) Return to Previous Screen");
+        }
     }
 
 
