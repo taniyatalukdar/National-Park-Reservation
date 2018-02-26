@@ -30,7 +30,7 @@ namespace Capstone.DAL
 
                     SqlCommand cmd = new SqlCommand(@"SELECT * FROM campground " +
                                                     "INNER JOIN park ON campground.park_id = park.park_id" +
-                                                    " WHERE park.name = @parkName ORDER BY campground.name;", conn);
+                                                    " WHERE park.name = @parkName;", conn);
                     cmd.Parameters.AddWithValue("@parkName", parkName);
                     
 

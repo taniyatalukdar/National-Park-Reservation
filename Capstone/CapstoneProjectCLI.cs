@@ -86,19 +86,24 @@ namespace Capstone
                     
                     DisplayAllCampgroundsInPark(selectedPark.Name);
                     
-                    campgroundIndex = CLIHelper.GetInteger("\nWhich campground (enter 0 to cancel)?  ___ ") - 1;
+                    campgroundIndex = CLIHelper.GetInteger("\nWhich campground (enter 0 to cancel)?  ___ ");
                     while(campgroundIndex < -1 || campgroundIndex > 2)
                     {
                         Console.WriteLine("Invalid input");
                         DisplayAllCampgroundsInPark(selectedPark.Name);
-                        campgroundIndex = CLIHelper.GetInteger("\nWhich campground (enter 0 to cancel)?  ___ ") - 1;
+                        campgroundIndex = CLIHelper.GetInteger("\nWhich campground (enter 0 to cancel)?  ___ ");
                     }
                     if(campgroundIndex == -1)
                     {
                         RunCLI();
                     }
-                    startDate = CLIHelper.GetDateTime("What is the arrival date?  dd/mm/yyyy ");
-                    endDate = CLIHelper.GetDateTime("What is the departure date?  dd/mm/yyyy ");
+                    startDate = CLIHelper.GetDateTime("What is the arrival date?  mm/dd/yyyy ");
+                    while (startDate < DateTime.UtcNow)
+                    {
+                        Console.WriteLine("Invalid date, please put try with another date!");
+                        startDate = CLIHelper.GetDateTime("What is the arrival date?  mm/dd/yyyy ");
+                    }
+                    endDate = CLIHelper.GetDateTime("What is the departure date?  mm/dd/yyyy ");
                     TimeSpan lengthOfStay = endDate.Subtract(startDate);
                     int stayLength = (int)lengthOfStay.TotalDays;
 
@@ -108,8 +113,8 @@ namespace Capstone
                     if(stayLength < 1)
                     {
                         Console.WriteLine("Invalid length of stay");
-                        startDate = CLIHelper.GetDateTime("What is the arrival date?  dd/mm/yyyy ");
-                        endDate = CLIHelper.GetDateTime("What is the departure date?  dd/mm/yyyy ");
+                        startDate = CLIHelper.GetDateTime("What is the arrival date?  mm/dd/yyyy ");                     
+                        endDate = CLIHelper.GetDateTime("What is the departure date?  mm/dd/yyyy ");
 
                     }
                     Console.Write("".PadRight(75, '_'));
@@ -126,18 +131,22 @@ namespace Capstone
                     int count = 0;
                     foreach (Campsite site in availableCampsites)
                     {
-                        Console.WriteLine(count+ site.Site_Number + " ".PadRight(10)+site.Max_Occupancy+" ".PadRight(10)+site.Accessible+" ".PadRight(10)+site.Max_Rv_Length+" ".PadRight(13)+site.Utilities+" ".PadRight(7)+ (campgrounds[campgroundIndex].Daily_Fee * stayLength));
+                        Console.WriteLine(site.Site_Number + " ".PadRight(10)+site.Max_Occupancy+" ".PadRight(10)+site.Accessible+" ".PadRight(10)+site.Max_Rv_Length+" ".PadRight(13)+site.Utilities+" ".PadRight(7)+ (campgrounds[campgroundIndex].Daily_Fee * stayLength));
                         count++;
                     }
 
                     Console.WriteLine("Which site to reserve? ");
                     int siteMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
-                    if(siteMenuChoice < 1 || siteMenuChoice > availableCampsites.Count)
+                    //if(siteMenuChoice < 1 || siteMenuChoice > availableCampsites.Count)
+                    //{
+                        //Console.WriteLine("Invalid Choice");
+                        //siteMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
+                    //}
+                   while(!availableCampsites.Exists(s => s.Site_Number == siteMenuChoice))
                     {
-                        Console.WriteLine("Invalid Choice");
+                        Console.WriteLine("Invalid Choice, please try again!");
                         siteMenuChoice = CLIHelper.GetInteger("\nSELECT:  ");
                     }
-                   
                     Console.WriteLine("What name should the reservation be under? ");
                     string reservationNameChoice = CLIHelper.GetString("\nSELECT:  ");
                     
@@ -176,7 +185,7 @@ namespace Capstone
             Console.WriteLine("_________________________________________________________________");
             for (int i = 0; i < campground.Count; i++)
             {
-                Console.WriteLine((i + 1) + " " + campground[i].Name.PadRight(25) + "  " + campground[i].Open_From_MM + "  ".PadRight(10) + campground[i].Open_From_MM + "    ".PadRight(10) + campground[i].Daily_Fee);
+                Console.WriteLine((campground[i].CampgroundId) + " " + campground[i].Name.PadRight(25) + "  " + campground[i].Open_From_MM + "  ".PadRight(10) + campground[i].Open_From_MM + "    ".PadRight(10) + campground[i].Daily_Fee);
 
             }
         }
