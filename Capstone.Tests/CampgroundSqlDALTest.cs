@@ -36,7 +36,7 @@ namespace Capstone.Tests
             {
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand("INSERT INTO campground VALUES (@park_id, @name, @openFromMm, @openToMm, @dailyFee) ", conn);
+                SqlCommand cmd = new SqlCommand("INSERT INTO campground VALUES (@park_id, @name, @openFromMm, @openToMm, @dailyFee)", conn);
 
                 cmd.Parameters.AddWithValue("@park_id", ParkId);
                 cmd.Parameters.AddWithValue("@name", Name);
