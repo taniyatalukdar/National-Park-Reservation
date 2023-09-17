@@ -133,19 +133,19 @@ _____________________________________________________________
 A campground table is provided to the system that provides a list of the one or many campgrounds located
 inside of a national park. The data columns are as follows:
 
-     Field          | Description
+       Field          | Description
 ________________________________________________________________________
-PK   campground_id  | A surrogate key for the campground.
+PK   | campground_id  | A surrogate key for the campground.
 _______________________________________________________________________
-FK   park_id        | The park that the campground is associated with.
+FK   | park_id        | The park that the campground is associated with.
 _______________________________________________________________________
-     name           | The name of the campground.
+     | name           | The name of the campground.
 ____________________________________________________________________________________________________________________
-     open_from_mm   | The numerical month the campground is open for reservation. ( 01 - January, 02 - February, …)
+     | open_from_mm   | The numerical month the campground is open for reservation. ( 01 - January, 02 - February, …)
 ______________________________________________________________________________________________________________________
-     open_to_mm     | The numerical month the campground is closed for reservation. ( 01 - January, 02 - February, …) 
+     | open_to_mm     | The numerical month the campground is closed for reservation. ( 01 - January, 02 - February, …) 
 ______________________________________________________________________________________________________________________
-     daily_fee      | The daily fee for booking a campsite at this campground
+     | daily_fee      | The daily fee for booking a campsite at this campground
 ____________________________________________________________________________________________________________________
 
 # Site Table
@@ -161,18 +161,26 @@ ________________________________________________________________________________
 ____________________________________________________________________________________________________________________
     | max_occupancy | Maximum occupancy at the campsite
 ____________________________________________________________________________________________________________________
-accessible Indicates whether or not the campsite is handicap accessible
-max_rv_length The maximum rv length that the campsite can fit. 0 indicates that
-no RV will fit at this campsite.
-utilities Indicates whether or not the campsite provides access to utility
-hookup.
-Reservation
+    | accessible    | Indicates whether or not the campsite is handicap accessible
+____________________________________________________________________________________________________________________
+    | max_rv_length | The maximum rv length that the campsite can fit. 0 indicates that no RV will fit at this campsite.
+____________________________________________________________________________________________________________________
+    | utilities     | Indicates whether or not the campsite provides access to utility hookup.
+____________________________________________________________________________________________________________________
+
+# Reservation
 The reservation table lists all of the past, current, and future reservations for a campsite in the national park
 system. The data columns are as follows:
-Field Description
-PK reservation_id A surrogate key for the reservation.
-FK site_id The campsite the reservation is for.
-name The name for the reservation.
-from_date The start date of the reservation.
-to_date The end date of the reservation.
-create_date The date the reservation was booked.
+
+   |Field           | Description
+PK | reservation_id | A surrogate key for the reservation.
+____________________________________________________________________________________________________________________
+FK | site_id        | The campsite the reservation is for.
+____________________________________________________________________________________________________________________
+   | name           | The name for the reservation.
+____________________________________________________________________________________________________________________   
+   | from_date      | The start date of the reservation.
+____________________________________________________________________________________________________________________   
+   | to_date        | The end date of the reservation.
+____________________________________________________________________________________________________________________   
+   | create_date    | The date the reservation was booked.
