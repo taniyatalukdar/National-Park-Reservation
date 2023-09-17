@@ -173,6 +173,7 @@ The reservation table lists all of the past, current, and future reservations fo
 system. The data columns are as follows:
 
    |Field           | Description
+____________________________________________________________________________________________________________________
 PK | reservation_id | A surrogate key for the reservation.
 ____________________________________________________________________________________________________________________
 FK | site_id        | The campsite the reservation is for.
